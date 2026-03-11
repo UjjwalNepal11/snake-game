@@ -34,6 +34,29 @@
   border: 0;
 }
 
+/* Desktop instructions - shown by default, hidden on mobile */
+.desktop-instruction,
+.desktop-hint {
+  display: block;
+}
+
+.mobile-instruction,
+.mobile-hint {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  .desktop-instruction,
+  .desktop-hint {
+    display: none;
+  }
+  
+  .mobile-instruction,
+  .mobile-hint {
+    display: block;
+  }
+}
+
 .game-header {
   text-align: center;
   margin-bottom: 15px;

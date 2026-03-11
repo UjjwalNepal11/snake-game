@@ -340,47 +340,120 @@ if (mobileResumeBtn) {
 
 let touchStartX = 0;
 let touchStartY = 0;
+let touchStartTime = 0;
+let touchMoveX = 0;
+let touchMoveY = 0;
+let lastTouchX = 0;
+let lastTouchY = 0;
+let lastTouchTime = 0;
+let touchVelocityX = 0;
+let touchVelocityY = 0;
+let isTouching = false;
 
-canvas.addEventListener(
-  "touchstart",
-  (e) => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-    e.preventDefault();
-  },
-  { passive: false },
-);
+const MIN_SWIPE_DISTANCE = 50; 
+const VELOCITY_THRESHOLD = 0.5; 
+const FAST_SWIPE_THRESHOLD = 100; 
 
-canvas.addEventListener(
-  "touchend",
-  (e) => {
-    if (!gameStarted || isGameOver || isPaused) return;
+const canvasContainer = document.querySelector(".canvas-container");
 
-    const touchEndX = e.changedTouches[0].clientX;
-    const touchEndY = e.changedTouches[0].clientY;
-
-    const diffX = touchEndX - touchStartX;
-    const diffY = touchEndY - touchStartY;
-
-    const minSwipe = 30;
-
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-      if (Math.abs(diffX) > minSwipe) {
-        if (diffX > 0) handleMobileInput("right");
-        else handleMobileInput("left");
+if (canvasContainer) {
+ 
+  canvasContainer.addEventListener(
+    "touchstart",
+    function (e) {
+      
+      if (e.target.tagName !== "BUTTON") {
+        e.preventDefault();
       }
-    } else {
-      if (Math.abs(diffY) > minSwipe) {
-        if (diffY > 0) handleMobileInput("down");
-        else handleMobileInput("up");
-      }
-    }
-    e.preventDefault();
-  },
-  { passive: false },
-);
 
-function handleMobileInput(dir) {
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchStartTime = Date.now();
+      touchMoveX = touch.clientX;
+      touchMoveY = touch.clientY;
+      lastTouchX = touch.clientX;
+      lastTouchY = touch.clientY;
+      lastTouchTime = Date.now();
+      touchVelocityX = 0;
+      touchVelocityY = 0;
+      isTouching = true;
+    },
+    { passive: false },
+  );
+  canvasContainer.addEventListener(
+    "touchmove",
+    function (e) {
+      if (!isTouching) return;
+
+      e.preventDefault();
+
+      const touch = e.touches[0];
+      const currentTime = Date.now();
+      const timeDelta = currentTime - lastTouchTime;
+
+      if (timeDelta > 0) {
+        touchVelocityX = (touch.clientX - lastTouchX) / timeDelta;
+        touchVelocityY = (touch.clientY - lastTouchY) / timeDelta;
+      }
+
+      touchMoveX = touch.clientX;
+      touchMoveY = touch.clientY;
+      lastTouchX = touch.clientX;
+      lastTouchY = touch.clientY;
+      lastTouchTime = currentTime;
+    },
+    { passive: false },
+  );
+
+  canvasContainer.addEventListener(
+    "touchend",
+    function (e) {
+      if (!isTouching) return;
+      isTouching = false;
+
+      const touch = e.changedTouches[0];
+      const diffX = touch.clientX - touchStartX;
+      const diffY = touch.clientY - touchStartY;
+
+      const distance = Math.sqrt(diffX * diffX + diffY * diffY);
+
+      if (distance < MIN_SWIPE_DISTANCE) return;
+
+      const isFastSwipe =
+        distance >= FAST_SWIPE_THRESHOLD ||
+        Math.abs(touchVelocityX) > VELOCITY_THRESHOLD ||
+        Math.abs(touchVelocityY) > VELOCITY_THRESHOLD;
+
+      const absX = Math.abs(diffX);
+      const absY = Math.abs(diffY);
+
+      let swipeDirection = "";
+
+      if (absX > absY) {
+        swipeDirection = diffX > 0 ? "right" : "left";
+      } else {
+       
+        swipeDirection = diffY > 0 ? "down" : "up";
+      }
+
+      handleMobileInput(swipeDirection, isFastSwipe);
+    },
+    { passive: false },
+  );
+
+  canvasContainer.addEventListener(
+    "touchcancel",
+    function (e) {
+      isTouching = false;
+      touchVelocityX = 0;
+      touchVelocityY = 0;
+    },
+    { passive: false },
+  );
+}
+
+function handleMobileInput(dir, isFastSwipe = false) {
   if (isCountingDown) return;
 
   if (!gameStarted && !isGameOver) {
@@ -388,19 +461,16 @@ function handleMobileInput(dir) {
     return;
   }
 
-  if (event && event.key === " " && !isGameOver && gameStarted) {
-    togglePause();
-    return;
-  }
-
   if (!gameStarted || isGameOver || isPaused) return;
 
   const currentDir = getDirectionFromKey(dir);
   if (currentDir) {
-    if (direction.x === 0 && direction.y === 0) {
+   
+    if (isFastSwipe || (direction.x === 0 && direction.y === 0)) {
       direction = { ...currentDir };
       nextDirection = { ...currentDir };
     } else {
+     
       if (!isOppositeDirection(currentDir, direction)) {
         nextDirection = currentDir;
       }
