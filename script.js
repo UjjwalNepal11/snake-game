@@ -350,18 +350,16 @@ let touchVelocityX = 0;
 let touchVelocityY = 0;
 let isTouching = false;
 
-const MIN_SWIPE_DISTANCE = 50; 
-const VELOCITY_THRESHOLD = 0.5; 
-const FAST_SWIPE_THRESHOLD = 100; 
+const MIN_SWIPE_DISTANCE = 30;
+const VELOCITY_THRESHOLD = 0.3;
+const FAST_SWIPE_THRESHOLD = 50;
 
 const canvasContainer = document.querySelector(".canvas-container");
 
 if (canvasContainer) {
- 
   canvasContainer.addEventListener(
     "touchstart",
     function (e) {
-      
       if (e.target.tagName !== "BUTTON") {
         e.preventDefault();
       }
@@ -433,7 +431,6 @@ if (canvasContainer) {
       if (absX > absY) {
         swipeDirection = diffX > 0 ? "right" : "left";
       } else {
-       
         swipeDirection = diffY > 0 ? "down" : "up";
       }
 
@@ -465,12 +462,10 @@ function handleMobileInput(dir, isFastSwipe = false) {
 
   const currentDir = getDirectionFromKey(dir);
   if (currentDir) {
-   
     if (isFastSwipe || (direction.x === 0 && direction.y === 0)) {
       direction = { ...currentDir };
       nextDirection = { ...currentDir };
     } else {
-     
       if (!isOppositeDirection(currentDir, direction)) {
         nextDirection = currentDir;
       }
