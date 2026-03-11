@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+      Snake Game – JavaScript Canvas Arcade | Play Classic Snake Online
+    </title>
+    <meta
+      name="description"
+      content="Play the classic Snake game built with JavaScript Canvas API. Enjoy arcade-style gameplay with multiple difficulty levels, achievements, and responsive design. Free to play in your browser!"
+    />
+    <meta
+      name="keywords"
+      content="snake game, javascript snake game, html css javascript game, browser snake game, arcade snake game, canvas snake game, play snake online, classic arcade game, retro snake, html5 game"
+    />
+    <meta name="author" content="Bhagwat Nepal" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <link rel="canonical" href="https://ujjwalnepal11.github.io/snake-game/" />
+    <meta name="theme-color" content="#2d3436" />
+
+    <meta property="og:title" content="Snake Game – JavaScript Canvas Arcade" />
+    <meta
+      property="og:description"
+      content="Play the classic Snake game built with JavaScript Canvas API. Multiple difficulty levels, achievements, and responsive design!"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://ujjwalnepal11.github.io/snake-game/"
+    />
+    <meta
+      property="og:image"
+      content="https://ujjwalnepal11.github.io/snake-game/images/s1.png"
+    />
+    <meta property="og:site_name" content="Snake Game" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Snake Game – JavaScript Canvas Arcade"
+    />
+    <meta
+      name="twitter:description"
+      content="Play the classic Snake game built with JavaScript Canvas API!"
+    />
+    <meta
+      name="twitter:image"
+      content="https://ujjwalnepal11.github.io/snake-game/images/s1.png"
+    />
+    <meta name="twitter:creator" content="@snakegame" />
+
+    <link rel="icon" href="images/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="images/favicon.png" />
+    <link rel="manifest" href="manifest.json" />
+
+    <link rel="preload" href="style.css" as="style" />
+    <link rel="preload" href="script.js" as="script" />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "Snake Game",
+        "description": "A classic Snake game built with JavaScript Canvas API featuring multiple difficulty levels, achievements, and responsive design.",
+        "url": "https://ujjwalnepal11.github.io/snake-game/",
+        "image": "https://ujjwalnepal11.github.io/snake-game/images/s1.png",
+        "genre": "Arcade",
+        "platform": {
+          "@type": "Thing",
+          "name": "Web Browser"
+        },
+        "operatingSystem": "Any",
+        "applicationCategory": "Game",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Snake Game Developer"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <main id="main-content" class="game-wrapper" role="main">
+      <header class="game-header" role="banner">
+        <h1 class="game-title">Snake Game</h1>
+      </header>
+
+      <section class="scoreboard" aria-label="Game Scoreboard">
+        <div class="score-box" aria-label="Current Score">
+          <span class="score-label">Score</span>
+          <span id="score" class="score-value" role="status" aria-live="polite"
+            >0</span
+          >
+        </div>
+        <div class="score-box" aria-label="High Score">
+          <span class="score-label">High Score</span>
+          <span id="highScore" class="score-value" aria-live="polite">0</span>
+        </div>
+        <div class="score-box" aria-label="Current Level">
+          <span class="score-label">Level</span>
+          <span id="level" class="score-value" aria-live="polite">1</span>
+        </div>
+        <div class="score-box" aria-label="Game Speed">
+          <span class="score-label">Speed</span>
+          <span id="speed" class="score-value">1x</span>
+        </div>
+      </section>
+
+      <div class="canvas-container">
+        <canvas
+          id="gameCanvas"
+          width="400"
+          height="400"
+          role="application"
+          aria-label="Snake Game Canvas"
+        ></canvas>
+
+        <div
+          id="settingsOverlay"
+          class="settings-overlay hidden"
+          role="dialog"
+          aria-labelledby="settings-title"
+          aria-modal="true"
+        >
+          <div class="settings-content">
+            <div class="settings-header">
+              <h2 id="settings-title">⚙️ Settings</h2>
+              <button
+                id="closeSettingsBtn"
+                class="close-settings-btn"
+                aria-label="Close Settings"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div class="settings-body">
+              <section
+                class="settings-section"
+                aria-labelledby="game-settings-heading"
+              >
+                <h3 id="game-settings-heading">🎮 Game Settings</h3>
+
+                <div class="setting-item">
+                  <label for="difficultySelect">Difficulty Level:</label>
+                  <select id="difficultySelect" class="setting-select">
+                    <option value="easy">Easy 🟢</option>
+                    <option value="medium" selected>Medium 🟡</option>
+                    <option value="hard">Hard 🟠</option>
+                    <option value="expert">Expert 🔴</option>
+                  </select>
+                  <div class="difficulty-info" id="difficultyInfo">
+                    Speed: Medium (150ms) | Speed Multiplier: 0.94
+                  </div>
+                </div>
+
+                <div class="setting-item">
+                  <button
+                    id="resetHighScoreBtn"
+                    class="reset-btn"
+                    aria-describedby="reset-help"
+                  >
+                    🔄 Reset High Score
+                  </button>
+                  <span
+                    id="resetConfirm"
+                    class="reset-confirm hidden"
+                    role="status"
+                    aria-live="polite"
+                    >High score reset!</span
+                  >
+                  <span id="reset-help" class="visually-hidden"
+                    >Reset your high score to zero</span
+                  >
+                </div>
+              </section>
+
+              <section
+                class="settings-section"
+                aria-labelledby="sound-settings-heading"
+              >
+                <h3 id="sound-settings-heading">🔊 Sound Settings</h3>
+
+                <div class="setting-item">
+                  <label for="masterSoundCheck">
+                    <input type="checkbox" id="masterSoundCheck" checked />
+                    Enable Sound Effects
+                  </label>
+                </div>
+
+                <div class="volume-control">
+                  <label for="volumeSlider">Volume:</label>
+                  <input
+                    type="range"
+                    id="volumeSlider"
+                    class="volume-slider"
+                    min="0"
+                    max="100"
+                    value="70"
+                    aria-label="Volume slider"
+                  />
+                  <span id="volumeValue" class="volume-value">70%</span>
+                </div>
+              </section>
+
+              <section
+                class="settings-section achievements-section"
+                aria-labelledby="achievements-heading"
+              >
+                <h3 id="achievements-heading">🏆 Achievements</h3>
+                <div
+                  class="achievements-grid"
+                  id="achievementsGrid"
+                  role="list"
+                >
+                  <div class="achievement" id="ach-first-food" role="listitem">
+                    <div class="achievement-icon">🍎</div>
+                    <div class="achievement-name">First Bite</div>
+                    <div class="achievement-desc">Eat your first food</div>
+                  </div>
+                  <div class="achievement" id="ach-score-100" role="listitem">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-name">Century</div>
+                    <div class="achievement-desc">Score 100 points</div>
+                  </div>
+                  <div class="achievement" id="ach-score-500" role="listitem">
+                    <div class="achievement-icon">🌟</div>
+                    <div class="achievement-name">High Scorer</div>
+                    <div class="achievement-desc">Score 500 points</div>
+                  </div>
+                  <div class="achievement" id="ach-level-5" role="listitem">
+                    <div class="achievement-icon">🚀</div>
+                    <div class="achievement-name">Rising Star</div>
+                    <div class="achievement-desc">Reach level 5</div>
+                  </div>
+                  <div class="achievement" id="ach-golden-food" role="listitem">
+                    <div class="achievement-icon">💎</div>
+                    <div class="achievement-name">Lucky Find</div>
+                    <div class="achievement-desc">Eat golden food</div>
+                  </div>
+                  <div class="achievement" id="ach-no-hit" role="listitem">
+                    <div class="achievement-icon">🎯</div>
+                    <div class="achievement-name">Perfect Run</div>
+                    <div class="achievement-desc">
+                      Eat 10 foods without hitting walls
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section
+                class="settings-section stats-section"
+                aria-labelledby="statistics-heading"
+              >
+                <h3 id="statistics-heading">📊 Statistics</h3>
+                <div class="stats-grid" id="statsGrid">
+                  <div class="stat-item">
+                    <div class="stat-item-label">Games Played</div>
+                    <div class="stat-item-value" id="statGamesPlayed">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-item-label">Total Foods</div>
+                    <div class="stat-item-value" id="statTotalFoods">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-item-label">Best Score</div>
+                    <div class="stat-item-value" id="statBestScore">0</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="stat-item-label">Max Level</div>
+                    <div class="stat-item-value" id="statMaxLevel">1</div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="settings-section" aria-labelledby="help-heading">
+                <h3 id="help-heading">❓ Help & How to Play</h3>
+
+                <div class="help-content">
+                  <div class="help-item">
+                    <strong>🎯 Objective:</strong>
+                    <p>
+                      Eat the red food to grow longer and score points. Don't
+                      hit the walls or your own tail!
+                    </p>
+                  </div>
+
+                  <div class="help-item desktop-controls-help">
+                    <strong>⌨️ Controls (Desktop):</strong>
+                    <ul class="controls-list">
+                      <li>
+                        <strong>Arrow Keys</strong> or <strong>WASD</strong> -
+                        Move snake
+                      </li>
+                      <li><strong>Space</strong> - Pause/Resume game</li>
+                      <li><strong>Enter</strong> - Start/Restart game</li>
+                    </ul>
+                  </div>
+
+                  <div
+                    class="help-item mobile-controls-help"
+                    style="display: none"
+                  >
+                    <strong>📱 Controls (Mobile):</strong>
+                    <ul class="controls-list">
+                      <li><strong>Swipe</strong> - Move snake</li>
+                      <li>
+                        <strong>Pause button</strong> (top-left) - Pause/Resume
+                      </li>
+                      <li><strong>Tap Resume</strong> button - Resume game</li>
+                    </ul>
+                  </div>
+
+                  <div class="help-item">
+                    <strong>📈 Level Progression:</strong>
+                    <p>
+                      Level increases every 100 points. Higher levels = faster
+                      speed & more points per food!
+                    </p>
+                  </div>
+
+                  <div class="help-item">
+                    <strong>🏆 Difficulty Levels:</strong>
+                    <ul class="difficulty-list">
+                      <li>
+                        <span class="diff-easy">Easy</span> - Slow speed, great
+                        for beginners
+                      </li>
+                      <li>
+                        <span class="diff-medium">Medium</span> - Balanced
+                        challenge
+                      </li>
+                      <li>
+                        <span class="diff-hard">Hard</span> - Fast paced action
+                      </li>
+                      <li>
+                        <span class="diff-expert">Expert</span> - For snake
+                        masters!
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div class="help-item">
+                    <strong>💡 Tips:</strong>
+                    <ul class="tips-list">
+                      <li>Plan ahead - the snake follows your path!</li>
+                      <li>Use the edges strategically</li>
+                      <li>Higher levels give more points per food</li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div class="settings-footer">
+              <button id="saveSettingsBtn" class="save-settings-btn">
+                Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="startScreen"
+          class="start-screen"
+          role="dialog"
+          aria-labelledby="start-title"
+          aria-modal="true"
+        >
+          <h2 id="start-title">🐍 Classic Snake</h2>
+          <p class="start-instruction">
+            Press <strong>Arrow Keys</strong> or <strong>WASD</strong> to Start
+          </p>
+          <p class="start-tip">Use Arrow Keys or WASD to move</p>
+          <p class="start-tip">Press Space to Pause</p>
+          <button id="startBtn" class="start-btn" aria-label="Start Game">
+            Start Game
+          </button>
+        </div>
+
+        <div
+          id="countdownScreen"
+          class="countdown-screen hidden"
+          role="status"
+          aria-live="polite"
+        >
+          <div class="countdown-number">3</div>
+        </div>
+
+        <div
+          id="gameOverScreen"
+          class="game-over-screen hidden"
+          role="dialog"
+          aria-labelledby="gameover-title"
+          aria-modal="true"
+        >
+          <h2 id="gameover-title">💀 Game Over!</h2>
+          <div class="game-over-stats">
+            <p>
+              Final Score: <span id="finalScore" class="stat-value">0</span>
+            </p>
+            <p>
+              Level Reached: <span id="finalLevel" class="stat-value">1</span>
+            </p>
+            <p>
+              Foods Eaten: <span id="finalFoods" class="stat-value">0</span>
+            </p>
+          </div>
+          <p
+            id="newHighScore"
+            class="new-high-score hidden"
+            role="status"
+            aria-live="excited"
+          >
+            🎉 New High Score! 🎉
+          </p>
+          <button id="restartBtn" class="restart-btn" aria-label="Play Again">
+            Play Again
+          </button>
+          <p class="restart-hint">Or press Enter to restart</p>
+        </div>
+
+        <div
+          id="pauseScreen"
+          class="pause-screen hidden"
+          role="dialog"
+          aria-labelledby="pause-title"
+        >
+          <h2 id="pause-title" class="pause-title">⏸️ Paused</h2>
+          <p class="desktop-hint">Press Space to Resume</p>
+          <button
+            id="mobileResumeBtn"
+            class="mobile-resume-btn"
+            aria-label="Resume Game"
+          >
+            ▶️ Resume
+          </button>
+        </div>
+
+        <button
+          id="settingsBtn"
+          class="settings-btn"
+          title="Settings"
+          aria-label="Open Settings"
+        >
+          ⚙️
+        </button>
+
+        <button
+          id="mobilePauseBtn"
+          class="mobile-pause-btn hidden"
+          title="Pause"
+          aria-label="Pause Game"
+        >
+          ⏸️
+        </button>
+      </div>
+    </main>
+    <section class="seo-content" aria-labelledby="about-heading">
+      <article>
+        <h2 id="about-heading">Snake Game – JavaScript Canvas Arcade</h2>
+
+        <h3>What is the Snake Game?</h3>
+        <p>
+          The Snake Game is a classic arcade-style game that has been a staple
+          of gaming since its introduction on Nokia mobile phones in 1997. Our
+          version is built using modern web technologies including HTML5, CSS3,
+          and JavaScript with the Canvas API for smooth rendering. The objective
+          is simple: guide a growing snake to eat food while avoiding walls and
+          your own tail. As you eat more food, your score increases and the
+          snake grows longer, making the game progressively more challenging.
+        </p>
+
+        <h3 id="howto-heading">How to Play</h3>
+        <p>
+          Playing our Snake Game is intuitive and fun! Use the
+          <strong>Arrow Keys</strong> or <strong>WASD</strong> to control the
+          snake's direction. Press <strong>Space</strong> to pause and resume
+          the game, and <strong>Enter</strong> to start or restart. On mobile
+          devices, simply swipe in the direction you want the snake to move, or
+          use the on-screen D-pad controls. Eat the red food items to grow
+          longer and earn points. Each level increases every 100 points, making
+          the snake faster and more challenging to control!
+        </p>
+
+        <h3 id="features-heading">Features</h3>
+        <ul>
+          <li>
+            <strong>Multiple Difficulty Levels:</strong> Choose from Easy,
+            Medium, Hard, and Expert modes to match your skill level
+          </li>
+          <li>
+            <strong>Achievement System:</strong> Unlock achievements like "First
+            Bite," "Century," "High Scorer," and more
+          </li>
+          <li>
+            <strong>Statistics Tracking:</strong> Monitor your games played,
+            foods eaten, best score, and max level
+          </li>
+          <li>
+            <strong>Special Food Items:</strong> Discover golden and freeze
+            power-ups for bonus points and speed effects
+          </li>
+          <li>
+            <strong>Sound Effects:</strong> Enable or disable sound effects and
+            adjust volume to your preference
+          </li>
+          <li>
+            <strong>Responsive Design:</strong> Play seamlessly on desktop,
+            tablet, and mobile devices
+          </li>
+          <li>
+            <strong>High Score Persistence:</strong> Your high score is saved
+            locally so you can compete against yourself
+          </li>
+          <li>
+            <strong>Modern Visual Effects:</strong> Enjoy smooth animations,
+            particle effects, and a sleek dark theme
+          </li>
+        </ul>
+
+        <h3 id="tech-heading">Technologies Used</h3>
+        <p>This Snake Game is built entirely with web-standard technologies:</p>
+        <ul>
+          <li>
+            <strong>HTML5:</strong> Provides the semantic structure and Canvas
+            element for game rendering
+          </li>
+          <li>
+            <strong>CSS3:</strong> Handles all styling, animations, transitions,
+            and responsive layouts
+          </li>
+          <li>
+            <strong>JavaScript (ES6+):</strong> Manages game logic, input
+            handling, and DOM manipulation
+          </li>
+          <li>
+            <strong>Canvas API:</strong> Enables high-performance 2D graphics
+            rendering for smooth gameplay
+          </li>
+          <li>
+            <strong>Local Storage API:</strong> Persists high scores, settings,
+            achievements, and statistics
+          </li>
+          <li>
+            <strong>Web Audio API:</strong> Generates sound effects without
+            requiring external audio files
+          </li>
+        </ul>
+
+        <p>
+          No frameworks or libraries were used – just pure, vanilla JavaScript
+          for optimal performance and educational value. The game is
+          lightweight, loads instantly, and works in any modern web browser
+          without plugins or installations.
+        </p>
+      </article>
+    </section>
+    <audio
+      id="eatSound"
+      src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleBQaI0CPlM2nWxoIP3yLk9CqYB4JP32Lk9GqXx0HP3yLktGqXh0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0HPnyLktGqXB0"
+      aria-hidden="true"
+    ></audio>
+
+    <audio
+      id="gameOverSound"
+      src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
+      aria-hidden="true"
+    ></audio>
+    <script defer src="script.js"></script>
+  </body>
+</html>

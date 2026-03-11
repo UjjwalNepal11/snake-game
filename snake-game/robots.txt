@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ujjwalnepal11.github.io/snake-game/sitemap.xml
+
