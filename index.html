@@ -3,10 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="google-site-verification"
-      content="lujOgNl5AW7iKj_yAGCgfr6AeMgXwby6qd6b17xxd6w"
-    />
+
     <title>
       Snake Game – JavaScript Canvas Arcade | Play Classic Snake Online
     </title>
@@ -132,6 +129,7 @@
           aria-label="Snake Game Canvas"
         ></canvas>
 
+        <!-- Settings Overlay, Start Screen, Game Over Screen, etc. remain here -->
         <div
           id="settingsOverlay"
           class="settings-overlay hidden"
@@ -320,10 +318,8 @@
                   >
                     <strong>📱 Controls (Mobile):</strong>
                     <ul class="controls-list">
-                      <li><strong>Swipe</strong> - Move snake</li>
-                      <li>
-                        <strong>Pause button</strong> (top-left) - Pause/Resume
-                      </li>
+                      <li><strong>D-Pad buttons</strong> - Move snake</li>
+                      <li><strong>Pause button</strong> - Pause/Resume game</li>
                       <li><strong>Tap Resume</strong> button - Resume game</li>
                     </ul>
                   </div>
@@ -385,18 +381,14 @@
           aria-modal="true"
         >
           <h2 id="start-title">🐍 Classic Snake</h2>
-
           <p class="start-instruction desktop-instruction">
             Press <strong>Arrow Keys</strong> or <strong>WASD</strong> to Start
           </p>
-          <p class="start-tip desktop-hint">Use Arrow Keys or WASD to move</p>
-          <p class="start-tip desktop-hint">Press Space to Pause</p>
-
           <p class="start-instruction mobile-instruction">
-            <strong>Tap Start</strong> to Play
+            <strong>Tap</strong> to Start
           </p>
-          <p class="start-tip mobile-hint">Swipe to move</p>
-
+          <p class="start-tip desktop-tip">Use Arrow Keys or WASD to move</p>
+          <p class="start-tip desktop-tip">Press Space to Pause</p>
           <button id="startBtn" class="start-btn" aria-label="Start Game">
             Start Game
           </button>
@@ -441,8 +433,8 @@
           <button id="restartBtn" class="restart-btn" aria-label="Play Again">
             Play Again
           </button>
-          <p class="restart-hint desktop-hint"> press Enter to restart</p>
-          <p class="restart-hint mobile-hint"> tap Play Again to restart</p>
+          <p class="restart-hint desktop-hint">press Enter to restart</p>
+          <p class="restart-hint mobile-hint">tap Play Again to restart</p>
         </div>
 
         <div
@@ -470,15 +462,45 @@
         >
           ⚙️
         </button>
+      </div>
 
-        <button
-          id="mobilePauseBtn"
-          class="mobile-pause-btn hidden"
-          title="Pause"
-          aria-label="Pause Game"
-        >
-          ⏸️
-        </button>
+      <!-- Mobile D-Pad Controls - placed outside canvas container for better visibility -->
+      <div class="mobile-controls" id="mobileControls">
+        <div class="dpad-container">
+          <button class="dpad-btn dpad-up" id="dpadUp" aria-label="Move Up">
+            ▲
+          </button>
+          <button
+            class="dpad-btn dpad-left"
+            id="dpadLeft"
+            aria-label="Move Left"
+          >
+            ◀
+          </button>
+          <button
+            class="dpad-btn dpad-down"
+            id="dpadDown"
+            aria-label="Move Down"
+          >
+            ▼
+          </button>
+          <button
+            class="dpad-btn dpad-right"
+            id="dpadRight"
+            aria-label="Move Right"
+          >
+            ▶
+          </button>
+        </div>
+        <div class="game-controls">
+          <button
+            class="game-control-btn pause-btn"
+            id="dpadPause"
+            aria-label="Pause Game"
+          >
+            ⏸️ Pause
+          </button>
+        </div>
       </div>
     </main>
     <section class="seo-content" aria-labelledby="about-heading">
